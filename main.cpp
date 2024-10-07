@@ -6,6 +6,7 @@
 #include <QPushButton>
 #include <QColorDialog>
 #include <QFontDialog>
+#include <QFileDialog>
 
 class Example : public QWidget {
 public:
@@ -46,6 +47,10 @@ public:
         tab3Layout->addWidget(changeFontButton);
         tab3->setLayout(tab3Layout);
 
+        addChangeFilePathButton(tab2, 1);
+        addChangeFilePathButton(tab3, 2);
+        addChangeFilePathButton(tab4, 3);
+
         setLayout(layout);
         setWindowTitle("分組作業");
         resize(300, 200);
@@ -81,8 +86,42 @@ private slots:
         }
     }
 
+    void changeFilePath(int tabIndex) {
+        QString filePath = QFileDialog::getOpenFileName(this, "選擇文件");
+        if (!filePath.isEmpty()) {
+            QTabWidget *tabWidget = findChild<QTabWidget *>();
+            if (!tabWidget) return;
+
+            QWidget *tab = tabWidget->widget(tabIndex);
+            if (!tab) return;
+
+            QLabel *label = tab->findChild<QLabel *>();
+            if (!label) {
+                label = new QLabel(tab);
+                QVBoxLayout *layout = qobject_cast<QVBoxLayout *>(tab->layout());
+                if (layout) {
+                    layout->addWidget(label);
+                }
+            }
+            label->setText(filePath);
+        }
+    }
+
 private:
     QLabel *label1;
+
+    void addChangeFilePathButton(QWidget *tab, int tabIndex) {
+        QPushButton *button = new QPushButton("選擇文件", tab);
+        QVBoxLayout *layout = qobject_cast<QVBoxLayout *>(tab->layout());
+        if (layout) {
+            layout->addWidget(button);
+        } else {
+            QVBoxLayout *newLayout = new QVBoxLayout();
+            newLayout->addWidget(button);
+            tab->setLayout(newLayout);
+        }
+        connect(button, &QPushButton::clicked, [this, tabIndex]() { changeFilePath(tabIndex); });
+    }
 };
 
 int main(int argc, char *argv[]) {
@@ -93,3 +132,4 @@ int main(int argc, char *argv[]) {
 
     return app.exec();
 }
+

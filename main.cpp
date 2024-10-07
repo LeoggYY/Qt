@@ -4,7 +4,8 @@
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QPushButton>
-#include <QColorDialog> 
+#include <QColorDialog>
+#include <QFontDialog>
 
 class Example : public QWidget {
 public:
@@ -18,7 +19,7 @@ public:
         QWidget *tab3 = new QWidget();
         QWidget *tab4 = new QWidget();
 
-        QLabel *label1 = new QLabel("隊長:41243147楊承哲\n組員1:41243219林厚丞\n組員2:41243239陳裕祥\n組員3:41243244黃順駿", tab1);
+        label1 = new QLabel("隊長:41243147楊承哲\n組員1:41243219林厚丞\n組員2:41243239陳裕翔\n組員3:41243244黃順駿", tab1);
 
         QVBoxLayout *tab1Layout = new QVBoxLayout();
         tab1Layout->addWidget(label1);
@@ -38,6 +39,13 @@ public:
         tab2Layout->addWidget(colorButton);
         tab2->setLayout(tab2Layout);
 
+        QPushButton *changeFontButton = new QPushButton("更改文字樣式", tab3);
+        connect(changeFontButton, &QPushButton::clicked, this, &Example::changeFontStyle);
+
+        QVBoxLayout *tab3Layout = new QVBoxLayout();
+        tab3Layout->addWidget(changeFontButton);
+        tab3->setLayout(tab3Layout);
+
         setLayout(layout);
         setWindowTitle("分組作業");
         resize(300, 200);
@@ -48,7 +56,7 @@ private slots:
         QTabWidget *tabWidget = findChild<QTabWidget *>();
         if (!tabWidget) return;
 
-        QWidget *tab1 = tabWidget->widget(0); 
+        QWidget *tab1 = tabWidget->widget(0);
         if (!tab1) return;
 
         QLabel *label = tab1->findChild<QLabel *>();
@@ -57,11 +65,24 @@ private slots:
         QColor color = QColorDialog::getColor(label->palette().color(QPalette::Text), this, "選擇字體顏色");
         if (color.isValid()) {
             QPalette palette = label->palette();
-            palette.setColor(QPalette::WindowText, color); 
+            palette.setColor(QPalette::WindowText, color);
             label->setPalette(palette);
-            label->setAutoFillBackground(true); 
+            label->setAutoFillBackground(true);
         }
     }
+
+    void changeFontStyle() {
+        if (label1) {
+            bool ok;
+            QFont font = QFontDialog::getFont(&ok, label1->font(), this, "選擇字體樣式");
+            if (ok) {
+                label1->setFont(font);
+            }
+        }
+    }
+
+private:
+    QLabel *label1;
 };
 
 int main(int argc, char *argv[]) {
